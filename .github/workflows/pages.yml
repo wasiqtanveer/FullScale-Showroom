@@ -40,11 +40,11 @@ jobs:
         # asset URLs pointing at a path that no longer exists.
         run: BASE_PATH="/${GITHUB_REPOSITORY#*/}/" npm run build
 
+      # Requires Pages to be switched on for the repository first:
+      # Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+      # `enablement: true` was tried and cannot do it — the default workflow
+      # token is not permitted to create Pages on this repository.
       - uses: actions/configure-pages@v5
-        # Turns Pages on for the repository if it is not already, so the first
-        # run does not fail on a setting nobody has touched yet.
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
