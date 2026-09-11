@@ -1,0 +1,10 @@
+# Normalise line endings in the repository and let each checkout use its own.
+# Without this, working on this repo from both Windows and macOS/Linux shows
+# every line of every file as changed.
+* text=auto eol=lf
+
+# Binary: never touch these.
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.svg text eol=lf

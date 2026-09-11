@@ -1,0 +1,425 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Page structure. The sheet is fixed behind everything; the document scrolls
+   over it, and each station is a stretch of scroll that the camera walks.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* The grain layer is inset -50% to avoid tiling seams; without clipping here
+     it reported into the document's scroll width and gave the phone a
+     horizontal scrollbar. */
+  overflow: hidden;
+}
+
+.stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Print tooth. A flat WebGL gradient reads as a screen; a little grain reads
+   as a sheet, and it costs one repeating 180-byte pattern. */
+.stage__grain {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.055;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* The lamp falls off toward the edges of the sheet. */
+.stage__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Eased back from 0.62/0.68: stacked on the scene fog it was crushing the
+     far half of the sheet to black and taking the drawing with it. */
+  background:
+    radial-gradient(125% 95% at 50% 44%, transparent 46%, rgba(15, 10, 7, 0.42) 100%),
+    linear-gradient(to bottom, rgba(20, 13, 8, 0.46) 0%, transparent 20%, transparent 76%, rgba(20, 13, 8, 0.5) 100%);
+}
+
+[data-webgl='off'] .stage {
+  background:
+    radial-gradient(120% 80% at 50% 30%, var(--umber-600) 0%, var(--umber-900) 100%);
+}
+
+main {
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Stations ─────────────────────────────────────────────────────────────
+   Every station is at least a viewport tall so the camera has room to move,
+   and its panel sits to one side so the furniture is never behind the text. */
+
+.station {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  /* The masthead is fixed, so every station reserves its height. Without this
+     the first heading of each panel sat underneath the navigation. */
+  padding: calc(var(--mast-h) + var(--s-6)) var(--gutter) var(--s-8);
+  display: grid;
+  align-content: center;
+  scroll-margin-top: var(--mast-h);
+}
+
+@media (min-width: 900px) {
+  .station {
+    padding-left: calc(var(--gutter) + var(--rail-w));
+  }
+}
+
+.station--threshold {
+  min-height: 100vh;
+  min-height: 100svh;
+  align-content: center;
+  padding-bottom: var(--s-10);
+}
+
+@media (max-width: 760px) {
+  /* Stacked, not side by side: the copy holds the top of the frame and the
+     plan gets the rest, so the sofa is beside the words rather than under
+     them. */
+  .station--threshold {
+    align-content: start;
+    padding-bottom: var(--s-9);
+  }
+}
+
+/* Text standing directly on the lit scene needs its own ground. A soft radial
+   wash reads as the lamp falling off, not as a panel — and it is the only
+   thing keeping the headline legible where the sofa passes behind it. */
+.threshold,
+.lift {
+  position: relative;
+}
+
+.threshold::before,
+.lift::before {
+  content: '';
+  position: absolute;
+  /* Kept inside the viewport: at -18% the scrim bled past the right edge and
+     gave the phone 45px of real sideways scroll. */
+  inset: -12% -2%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    70% 62% at 34% 48%,
+    rgba(22, 15, 10, 0.86) 0%,
+    rgba(22, 15, 10, 0.62) 48%,
+    rgba(22, 15, 10, 0) 100%
+  );
+}
+
+.lift::before {
+  background: radial-gradient(
+    62% 58% at 50% 50%,
+    rgba(22, 15, 10, 0.88) 0%,
+    rgba(22, 15, 10, 0.6) 52%,
+    rgba(22, 15, 10, 0) 100%
+  );
+}
+
+.threshold {
+  max-width: 40rem;
+  display: grid;
+  gap: var(--s-5);
+  justify-items: start;
+}
+
+.threshold .display--xl {
+  margin-bottom: var(--s-1);
+}
+
+.threshold .actions {
+  margin-top: var(--s-2);
+}
+
+/* The lift: one line, centred, nothing else. A dense page earns a quiet act. */
+.station--lift {
+  min-height: 120vh;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.lift {
+  display: grid;
+  gap: var(--s-5);
+  justify-items: center;
+  max-width: 44rem;
+}
+
+/* Room stations: a single panel, left or right, so the plan stays readable.
+   The section is taller than the viewport to give the camera scroll distance,
+   so the panel sticks rather than centring inside that taller box — centred in
+   a 120vh section, its heading spent most of the station under the masthead. */
+.station--room {
+  min-height: 124vh;
+  align-content: start;
+  justify-items: start;
+}
+
+.station--room .room {
+  position: sticky;
+  top: calc(var(--mast-h) + var(--s-5));
+}
+
+/* One ground for every block that stands on the lit sheet. The enquiry form
+   and the sheet index were sitting directly on moving 3D: the heading was
+   illegible and anything typed would have landed on a sofa. */
+.room,
+.enquire,
+.sheet-index,
+.workshop {
+  position: relative;
+  padding: var(--s-6);
+  /* Near-opaque. At 0.9/0.74 the sofa showed through the specification list
+     and the dimensions became guesswork. */
+  background: linear-gradient(
+    to bottom right,
+    rgba(24, 17, 12, 0.985),
+    rgba(24, 17, 12, 0.955)
+  );
+  backdrop-filter: blur(18px) saturate(115%);
+  border: 1px solid var(--hair);
+  /* Corner ticks instead of a rounded card: this is a drawn frame. */
+  border-radius: 0;
+  box-shadow: 0 26px 60px -30px rgba(10, 6, 3, 0.85);
+}
+
+.room {
+  width: min(30rem, 100%);
+  display: grid;
+  gap: var(--s-4);
+}
+
+.room::before,
+.room::after,
+.enquire::before,
+.enquire::after,
+.sheet-index::before,
+.sheet-index::after,
+.workshop::before,
+.workshop::after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--bone-500);
+}
+
+.room::before,
+.enquire::before,
+.sheet-index::before,
+.workshop::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.room::after,
+.enquire::after,
+.sheet-index::after,
+.workshop::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: 0;
+  border-top: 0;
+}
+
+@media (min-width: 1080px) {
+  .station--room-right {
+    justify-items: end;
+  }
+
+  .station--room-right .room {
+    text-align: left;
+  }
+}
+
+/* The station number, pinned in the panel's margin as a plan marker. */
+.room__marker {
+  position: absolute;
+  top: var(--s-5);
+  right: calc(-1 * var(--s-5));
+  width: 2.9rem;
+  height: 2.9rem;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--live);
+  border-radius: 50%;
+  background: var(--umber-900);
+}
+
+.room__marker b {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--live);
+}
+
+@media (max-width: 560px) {
+  .room__marker {
+    right: var(--s-4);
+    top: calc(-1 * var(--s-4));
+  }
+}
+
+/* ── The sheet station: the full plan, and the index of everything on it. */
+.station--sheet,
+.station--workshop,
+.station--enquire {
+  /* Content taller than the viewport must start below the masthead, not be
+     centred in a box taller than the screen: centring is what put the Made
+     twice and Stand in it headings underneath the navigation. */
+  min-height: auto;
+  align-content: start;
+  padding-top: calc(var(--mast-h) + var(--s-7));
+  padding-bottom: var(--s-10);
+}
+
+.sheet-index {
+  width: min(72rem, 100%);
+  display: grid;
+  gap: var(--s-5);
+}
+
+.sheet-index .lede {
+  max-width: 48ch;
+}
+
+/* ── Workshop ─────────────────────────────────────────────────────────────── */
+.workshop {
+  width: min(68rem, 100%);
+  display: grid;
+  gap: var(--s-7);
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+  counter-reset: step;
+}
+
+@media (min-width: 860px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.steps li {
+  counter-increment: step;
+  background: rgba(26, 18, 13, 0.94);
+  backdrop-filter: blur(12px);
+  padding: var(--s-5);
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  column-gap: var(--s-4);
+  row-gap: var(--s-3);
+  align-content: start;
+}
+
+/* The step number lives in a left gutter beside the heading, the way a
+   numbered instruction plate sets it — not stacked above it as a label. */
+.steps__n {
+  grid-row: 1 / span 2;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--live);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  justify-self: center;
+  padding-top: 0.2rem;
+}
+
+.steps li h3 {
+  font-size: 1.18rem;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 104;
+  letter-spacing: -0.008em;
+  line-height: 1.2;
+  color: var(--bone-100);
+}
+
+.steps li p:not(.steps__n) {
+  color: var(--bone-300);
+  font-size: 0.96rem;
+}
+
+/* ── Enquire ──────────────────────────────────────────────────────────────── */
+.enquire {
+  width: min(46rem, 100%);
+  display: grid;
+  gap: var(--s-5);
+}
+
+/* ── Titleblock footer ────────────────────────────────────────────────────── */
+.titleblock {
+  position: relative;
+  z-index: 10;
+  background: var(--umber-900);
+  border-top: 1.5px solid var(--hair-strong);
+  padding: var(--s-7) var(--gutter) var(--s-4);
+}
+
+@media (min-width: 900px) {
+  .titleblock {
+    padding-left: calc(var(--gutter) + var(--rail-w));
+  }
+}
+
+.tb__grid {
+  display: grid;
+  gap: var(--s-6);
+  padding-bottom: var(--s-6);
+}
+
+@media (min-width: 760px) {
+  .tb__grid {
+    grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+    gap: var(--s-5);
+  }
+}
+
+.tb__cell {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+}
+
+.tb__cell ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.tb__cell a {
+  color: var(--bone-300);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.tb__cell a:hover {
+  color: var(--bone-100);
+  text-decoration: underline;
+  text-decoration-color: var(--tan-300);
+}

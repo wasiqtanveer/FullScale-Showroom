@@ -1,0 +1,1137 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Components, all in the sheet's own vocabulary: ruled boxes, slashed
+   terminators, tracked mono labels, circled markers. No stock chrome.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Masthead ─────────────────────────────────────────────────────────────── */
+.masthead {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--gutter);
+  background: linear-gradient(to bottom, rgba(20, 13, 8, 0.86), rgba(20, 13, 8, 0));
+  backdrop-filter: blur(3px);
+}
+
+.wordmark {
+  display: grid;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--bone-100);
+}
+
+.wordmark__scale {
+  width: 44px;
+  height: 12px;
+  fill: none;
+  stroke: var(--tan-300);
+  stroke-width: 1.2;
+  overflow: visible;
+}
+
+.wordmark__name {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 118;
+  font-size: 1.06rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.nav {
+  display: none;
+}
+
+@media (min-width: 820px) {
+  .nav {
+    display: block;
+  }
+}
+
+.nav ul {
+  display: flex;
+  gap: var(--s-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav a {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.nav a:hover {
+  color: var(--bone-100);
+  border-bottom-color: var(--tan-300);
+}
+
+.masthead__right {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+/* The sheet number, in its own ruled box, as on any drawing's corner. */
+.revbox {
+  display: none;
+  border: 1px solid var(--hair-strong);
+}
+
+@media (min-width: 560px) {
+  .revbox {
+    display: grid;
+    grid-auto-flow: column;
+  }
+}
+
+.revbox__k,
+.revbox__v {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  line-height: 1;
+}
+
+.revbox__k {
+  color: var(--bone-300);
+  border-right: 1px solid var(--hair-strong);
+}
+
+.revbox__v {
+  color: var(--live);
+  font-weight: 700;
+  min-width: 2.4rem;
+  text-align: center;
+}
+
+.stamp {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--umber-900);
+  background: var(--tan-300);
+  padding: 7px 12px;
+  text-decoration: none;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.stamp:hover {
+  background: var(--bone-100);
+}
+
+/* ── Phone navigation: the sheet index ────────────────────────────────────── */
+.menubtn {
+  width: 44px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--hair-strong);
+  cursor: pointer;
+  transition: border-color 0.3s var(--ease);
+}
+
+.menubtn svg {
+  width: 22px;
+  height: 14px;
+  fill: none;
+  stroke: var(--bone-100);
+  stroke-width: 1.4;
+}
+
+.menubtn:hover {
+  border-color: var(--tan-300);
+}
+
+.menubtn svg path {
+  transition: transform 0.4s var(--ease);
+  transform-origin: center;
+}
+
+.menubtn[aria-expanded='true'] svg path:nth-child(1) {
+  transform: translateY(6px);
+}
+
+.menubtn[aria-expanded='true'] svg path:nth-child(3) {
+  transform: translateY(-6px);
+}
+
+@media (min-width: 820px) {
+  .menubtn {
+    display: none;
+  }
+}
+
+/* `display: grid` on a class outranks the hidden attribute's UA `display:none`,
+   so the attribute has to be honoured explicitly or the drawer ships open. */
+.drawer[hidden] {
+  display: none;
+}
+
+@media (min-width: 820px) {
+  .drawer {
+    display: none !important;
+  }
+}
+
+.drawer {
+  position: fixed;
+  inset: var(--mast-h) 0 0;
+  z-index: 39;
+  background: rgba(20, 13, 8, 0.985);
+  backdrop-filter: blur(20px);
+  padding: var(--s-5) var(--gutter) var(--s-6);
+  display: grid;
+  align-content: space-between;
+  overflow-y: auto;
+}
+
+.drawer nav ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+
+.drawer a {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4) 0;
+  border-bottom: 1px solid var(--hair);
+  text-decoration: none;
+}
+
+.drawer a b {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--live);
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hair-strong);
+  border-radius: 50%;
+}
+
+.drawer a span {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-variation-settings: 'wdth' 112;
+  font-size: 1.24rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--bone-100);
+}
+
+.drawer a:hover b {
+  border-color: var(--live);
+}
+
+.drawer__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-top: var(--s-5);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-500);
+}
+
+/* ── Station rail: the plan's circulation, doubling as scroll position ────── */
+.rail {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .rail {
+    display: grid;
+    position: fixed;
+    left: var(--gutter);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 35;
+    gap: var(--s-6);
+    align-content: center;
+  }
+}
+
+.rail ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-4);
+}
+
+.rail a {
+  display: grid;
+  grid-template-columns: 1.9rem 1fr;
+  align-items: center;
+  gap: var(--s-3);
+  text-decoration: none;
+  color: var(--bone-500);
+  transition: color 0.4s var(--ease);
+}
+
+.rail a b {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hair);
+  border-radius: 50%;
+  transition: border-color 0.4s var(--ease), color 0.4s var(--ease),
+    background 0.4s var(--ease);
+}
+
+.rail a span {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.rail a:hover,
+.rail a.is-on {
+  color: var(--bone-100);
+}
+
+.rail a:hover span,
+.rail a.is-on span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.rail a.is-on b {
+  border-color: var(--live);
+  color: var(--live);
+  background: rgba(143, 176, 160, 0.1);
+}
+
+.rail__scalebar {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  padding-left: 0.45rem;
+}
+
+.rail__scalebar svg {
+  width: 8px;
+  height: 62px;
+  fill: none;
+  stroke: var(--hair-strong);
+  stroke-width: 1;
+}
+
+.rail__scalebar span {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  color: var(--bone-500);
+}
+
+/* ── Buttons: ruled rectangles with a slashed terminator, not pills ───────── */
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--bone-100);
+  --btn-line: var(--hair-strong);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.82rem 1.3rem;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid var(--btn-line);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: color 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+
+.btn svg {
+  width: 20px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  overflow: visible;
+  transition: transform 0.45s var(--ease);
+}
+
+/* The fill wipes across on hover, the way a lamp sweeps a surface. */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tan-300);
+  transform: translateX(-101%);
+  transition: transform 0.5s var(--ease-soft);
+  z-index: 0;
+}
+
+.btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn:hover svg {
+  transform: translateX(4px);
+}
+
+.btn--primary {
+  --btn-bg: var(--tan-500);
+  --btn-fg: #2a1c0f;
+  --btn-line: var(--tan-500);
+}
+
+.btn--primary:hover {
+  --btn-fg: #2a1c0f;
+  --btn-line: var(--tan-300);
+}
+
+.btn--primary::before {
+  transform: translateX(0);
+  background: var(--tan-300);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.btn--primary:hover::before {
+  opacity: 1;
+}
+
+.btn--ghost:hover {
+  --btn-line: var(--bone-300);
+}
+
+.btn--ghost:hover::before {
+  transform: translateX(0);
+  opacity: 0.12;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+.btn--submit {
+  justify-self: start;
+}
+
+/* ── Drawing furniture: sheet stamp and scroll cue ────────────────────────── */
+.sheet-stamp {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--s-6);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-500);
+}
+
+@media (min-width: 900px) {
+  .sheet-stamp {
+    left: calc(var(--gutter) + var(--rail-w));
+  }
+}
+
+.sheet-stamp svg {
+  width: 28px;
+  height: 10px;
+  fill: none;
+  stroke: var(--hair-strong);
+  stroke-width: 1;
+  overflow: visible;
+}
+
+.scrollcue {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--s-6);
+  margin: 0;
+  display: none;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-500);
+}
+
+@media (min-width: 680px) {
+  .scrollcue {
+    display: flex;
+  }
+}
+
+.scrollcue svg {
+  width: 10px;
+  height: 30px;
+  fill: none;
+  stroke: var(--bone-500);
+  stroke-width: 1.2;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scrollcue svg {
+    animation: cue 2.6s var(--ease-soft) infinite;
+  }
+}
+
+@keyframes cue {
+  0%,
+  100% {
+    transform: translateY(-3px);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+}
+
+/* ── Specification list: a drawing's schedule, ruled ──────────────────────── */
+.specs {
+  margin: var(--s-2) 0 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--hair);
+}
+
+.specs > div {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: var(--s-3);
+  padding: 0.58rem 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.specs dt {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  padding-top: 0.18rem;
+}
+
+.specs dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--bone-100);
+}
+
+.aside-note {
+  font-size: 0.9rem;
+  color: var(--bone-300);
+  padding-left: var(--s-4);
+  border-left: 1px solid var(--hair-strong);
+  max-width: 40ch;
+}
+
+/* ── Upholstery swatches: a real radiogroup, 44px targets ─────────────────── */
+.swatches {
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: var(--s-3);
+}
+
+.swatches legend {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  padding: 0;
+  margin-bottom: var(--s-2);
+}
+
+.swatches__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.swatch {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid var(--hair-strong);
+  background: var(--sw);
+  cursor: pointer;
+  transition: box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
+}
+
+.swatch::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(30, 21, 16, 0);
+  transition: border-color 0.3s var(--ease);
+}
+
+.swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -8px rgba(10, 6, 3, 0.9);
+}
+
+.swatch.is-on {
+  box-shadow: 0 0 0 1px var(--umber-800), 0 0 0 3px var(--live);
+}
+
+.swatch.is-on::after {
+  border-color: rgba(30, 21, 16, 0.5);
+}
+
+.swatch__name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.swatches__hint {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--bone-300);
+  min-height: 2.2em;
+}
+
+/* ── Projected annotations: the drawing labelling the real object ─────────── */
+.annos {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.anno {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+  will-change: transform;
+}
+
+.anno.is-on {
+  opacity: 1;
+}
+
+.anno__dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 3px rgba(143, 176, 160, 0.18);
+  transform: translate(-50%, -50%);
+}
+
+.anno__leader {
+  position: absolute;
+  stroke: var(--hair-strong);
+  stroke-width: 1;
+  width: 2px;
+}
+
+.anno__leader line {
+  stroke: var(--hair-strong);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.anno__text {
+  position: absolute;
+  display: grid;
+  gap: 1px;
+  padding: 5px 9px;
+  background: rgba(20, 13, 8, 0.82);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--hair);
+  white-space: nowrap;
+}
+
+.anno__text b {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--bone-100);
+  line-height: 1.1;
+}
+
+.anno__text i {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.56rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  line-height: 1.1;
+}
+
+/* Leader geometry per side: the label stands off the point, connected. */
+.anno--down .anno__text {
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.anno--down .anno__leader {
+  height: 28px;
+  top: 2px;
+  left: -1px;
+}
+
+.anno--up .anno__text {
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.anno--up .anno__leader {
+  height: 28px;
+  bottom: 2px;
+  left: -1px;
+}
+
+.anno--left .anno__text {
+  right: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.anno--left .anno__leader {
+  width: 30px;
+  height: 2px;
+  right: 2px;
+  top: -1px;
+}
+.anno--left .anno__leader line {
+  x1: 0;
+  y1: 1;
+  x2: 2;
+  y2: 1;
+}
+
+.anno--right .anno__text {
+  left: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.anno--right .anno__leader {
+  width: 30px;
+  height: 2px;
+  left: 2px;
+  top: -1px;
+}
+
+@media (max-width: 700px) {
+  /* On a phone the labels would cover the furniture they describe. The
+     dimensions are all in the spec lists, so the overlay simply steps back. */
+  .annos {
+    display: none;
+  }
+}
+
+/* ── Collection index: a real schedule table ──────────────────────────────── */
+.index-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--hair);
+  background: rgba(26, 18, 13, 0.955);
+  backdrop-filter: blur(14px);
+}
+
+.index {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.index thead th {
+  position: sticky;
+  top: 0;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  background: var(--umber-900);
+  padding: 0.7rem var(--s-4);
+  border-bottom: 1.5px solid var(--hair-strong);
+  /* Clear the fixed masthead, or the column heads sit under the navigation
+     for the whole length of an eleven-row schedule — and stack above the body
+     cells, or the sticky head parks itself on top of row two. */
+  top: var(--mast-h);
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.index tbody tr {
+  border-bottom: 1px solid var(--hair);
+  transition: background 0.25s var(--ease);
+}
+
+.index tbody tr:hover {
+  background: rgba(143, 176, 160, 0.07);
+}
+
+.index tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.index td,
+.index tbody th {
+  padding: 0.72rem var(--s-4);
+  text-align: left;
+  font-weight: 400;
+  vertical-align: baseline;
+}
+
+.index__ref {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--live);
+  white-space: nowrap;
+}
+
+.index__name {
+  color: var(--bone-100);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.index__room,
+.index__mat {
+  color: var(--bone-300);
+  white-space: nowrap;
+}
+
+.index__dims,
+.index__lead {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--bone-300);
+  white-space: nowrap;
+}
+
+.note-strip {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  color: var(--bone-300);
+  padding: var(--s-3) var(--s-4);
+  border: 1px dashed var(--hair-strong);
+}
+
+/* ── Finish library ───────────────────────────────────────────────────────── */
+.finishes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* Four up, so the eight finishes fill two complete rows. An auto-fill grid
+     left a four-cell empty ruled strip after Blacked steel. */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+}
+
+@media (min-width: 680px) {
+  .finishes__list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.finishes__list li {
+  display: grid;
+  grid-template-columns: 2.1rem 1fr;
+  align-items: center;
+  column-gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: rgba(26, 18, 13, 0.94);
+}
+
+.finishes__list span {
+  grid-row: 1 / span 2;
+  width: 2.1rem;
+  height: 2.1rem;
+  background: var(--sw);
+  border: 1px solid var(--hair-strong);
+}
+
+.finishes__list b {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--bone-100);
+  line-height: 1.3;
+}
+
+.finishes__list i {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────────── */
+.form {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-3);
+}
+
+@media (min-width: 640px) {
+  .form {
+    grid-template-columns: 1fr 1fr;
+  }
+  .field--wide,
+  .btn--submit,
+  .form__status {
+    grid-column: 1 / -1;
+  }
+}
+
+.field {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.field label {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+}
+
+.field label span {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: var(--bone-500);
+}
+
+.field input,
+.field textarea {
+  font-family: var(--sans);
+  font-size: 1rem;
+  color: var(--bone-100);
+  background: rgba(20, 13, 8, 0.6);
+  border: 1px solid var(--hair-strong);
+  border-radius: 0;
+  padding: 0.72rem 0.85rem;
+  caret-color: var(--live);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+  line-height: 1.5;
+}
+
+.field input:hover,
+.field textarea:hover {
+  border-color: var(--bone-500);
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: none;
+  border-color: var(--live);
+  background: rgba(20, 13, 8, 0.85);
+  box-shadow: 0 0 0 3px rgba(143, 176, 160, 0.16);
+}
+
+.field [aria-invalid='true'] {
+  border-color: var(--alarm);
+}
+
+.field__err {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--alarm);
+  min-height: 1em;
+}
+
+.form__status {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--bone-300);
+  padding-left: var(--s-4);
+  border-left: 1px solid var(--hair-strong);
+  min-height: 1.4em;
+}
+
+.form__status[data-tone='ok'] {
+  color: var(--live);
+  border-left-color: var(--live);
+}
+
+.form__status[data-tone='err'] {
+  color: var(--alarm);
+  border-left-color: var(--alarm);
+}
+
+/* ── Titleblock ───────────────────────────────────────────────────────────── */
+.tb__k {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--bone-500);
+}
+
+.tb__mark {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 122;
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--bone-100);
+}
+
+.tb__sub {
+  font-size: 0.9rem;
+  color: var(--bone-300);
+  max-width: 30ch;
+}
+
+.tb__apps {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.appbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--hair-strong);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+.appbtn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.appbtn:hover {
+  border-color: var(--tan-300);
+  color: var(--bone-100);
+}
+
+.tb__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3) var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--hair);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--bone-300);
+}
+
+.tb__strip span {
+  display: inline-flex;
+  gap: var(--s-2);
+  align-items: baseline;
+}
+
+.tb__strip-end {
+  margin-left: auto;
+}
+
+.tb__strip a {
+  color: var(--bone-300);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hair-strong);
+  padding-bottom: 1px;
+}
+
+.tb__strip a:hover {
+  color: var(--bone-100);
+  border-bottom-color: var(--tan-300);
+}

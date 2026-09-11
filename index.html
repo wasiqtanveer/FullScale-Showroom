@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" data-motion="full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full Scale | Furniture drawn to live inside</title>
+    <meta
+      name="description"
+      content="Full Scale draws every piece at 1:1 and builds it to be sat in for thirty years. Walk the showroom plan, room by room."
+    />
+    <meta name="theme-color" content="#372619" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="module" src="/src/main.js"></script>
+
+    <!--
+      The loader's styles are inline, and only the loader's. Everything else
+      ships in the CSS bundle, but a preloader that waits for that bundle is a
+      blank screen with extra steps: this has to paint on the first frame the
+      browser gets, before any stylesheet or module has arrived.
+    -->
+    <style>
+      .boot {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 2.25rem;
+        padding: 1.5rem;
+        background: #2a1e16;
+        color: #f2e7d3;
+        font-family: 'Martian Mono Variable', ui-monospace, SFMono-Regular, monospace;
+        /* The ground here is #2a1e16 — --umber-800, the page's own
+           background, to the byte. That is what makes the exit a hand-off
+           rather than a curtain: there is nothing behind the loader to hide,
+           so the ground dissolves where it stands and the only thing that
+           changes is the room's lamplight coming up through it. */
+        transition: opacity 0.72s cubic-bezier(0.33, 0, 0.2, 1);
+        will-change: opacity;
+      }
+      .boot[hidden] {
+        display: none;
+      }
+      /* Phase one: the drawing is taken off the sheet. Only the linework and
+         the wordmark move, and only a little. Flying the whole full-viewport
+         slab upward was the jank — with identical ground either side of it the
+         eye read nothing but type and rules being yanked across the frame,
+         which is the one motion the page never makes anywhere else. */
+      .boot.is-leaving .boot__plan {
+        opacity: 0;
+        transform: translateY(-1.1rem);
+      }
+      .boot.is-leaving .boot__block {
+        opacity: 0;
+        transform: translateY(-0.55rem);
+        transition-delay: 60ms;
+      }
+      /* Phase two: the ground clears, onto a first viewport that is already
+         lit and begins its own entrance on this same frame. */
+      .boot.is-done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* The sheet behind the loader is built, compiled and lit before any of
+         this runs. It is held back only so that it arrives *with* the ground
+         clearing, instead of being uncovered already static — a reveal onto a
+         motionless page is what made the old exit feel like a shutter. Dimmed
+         only while the loader exists, and the dim has no transition of its
+         own, so every failure path shows the sheet outright and instantly. */
+      html.booting .stage {
+        opacity: 0;
+        transform: scale(1.035);
+      }
+      html.booting.boot-out .stage {
+        opacity: 1;
+        transform: none;
+        transition:
+          opacity 1.15s cubic-bezier(0.33, 0, 0.2, 1),
+          transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .boot__plan {
+        width: min(74vw, 26rem);
+        aspect-ratio: 14 / 13;
+        overflow: visible;
+        fill: none;
+        stroke: #f2e7d3;
+        stroke-width: 0.07;
+        opacity: 0.92;
+        transition:
+          opacity 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+          transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .boot__plan rect,
+      .boot__plan path {
+        stroke-dasharray: 1;
+        stroke-dashoffset: calc(1 - var(--p, 0));
+        /* Short, and barely staggered. At 1.05s with a 0.39s stagger the
+           linework visibly trailed the figure — the drawing has to lead the
+           number, not catch up to it. */
+        transition: stroke-dashoffset 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .boot__plan rect:nth-of-type(2) { transition-delay: 0.04s; }
+      .boot__plan rect:nth-of-type(3) { transition-delay: 0.08s; }
+      .boot__plan rect:nth-of-type(4) { transition-delay: 0.12s; }
+      .boot__plan .boot__walk {
+        stroke: #8fb0a0;
+        stroke-width: 0.05;
+        stroke-dasharray: 0.007 0.024;
+        stroke-dashoffset: 0;
+        opacity: calc(var(--p, 0) * 0.9);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .boot__block {
+        display: grid;
+        gap: 0.6rem;
+        transition:
+          opacity 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+          transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+        justify-items: center;
+        width: min(88vw, 30rem);
+      }
+      .boot__mark {
+        font-family: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+        font-weight: 700;
+        font-variation-settings: 'wdth' 118;
+        font-size: 0.95rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      /* A dimension string, not a progress bar: slash terminators, and the
+         figure sits on the rule the way it does on the sheet. */
+      .boot__rule {
+        position: relative;
+        width: 100%;
+        height: 1px;
+        background: rgba(242, 231, 211, 0.2);
+      }
+      .boot__rule::before,
+      .boot__rule::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        width: 1px;
+        height: 11px;
+        background: rgba(242, 231, 211, 0.42);
+        transform: rotate(-38deg);
+      }
+      .boot__rule::before { left: 0; }
+      .boot__rule::after { right: 0; }
+      .boot__fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: calc(var(--p, 0) * 100%);
+        background: #e3b183;
+        transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .boot__meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        font-size: 0.58rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #cbb79a;
+        font-variant-numeric: tabular-nums lining-nums;
+      }
+      .boot__pct {
+        color: #f2e7d3;
+      }
+      /* Nothing eases for a visitor who asked for less movement — the loader
+         still reports, it just stops drawing itself. */
+      @media (prefers-reduced-motion: reduce) {
+        .boot,
+        .boot__plan,
+        .boot__plan rect,
+        .boot__plan path,
+        .boot__block,
+        .boot__fill,
+        html.booting .stage {
+          transition-duration: 0.01ms !important;
+        }
+        html.booting .stage {
+          transform: none;
+        }
+      }
+      /* Locking scroll must not move the page. Without a stable gutter the
+         scrollbar disappears for the length of the load and comes back at the
+         hand-off, sliding every line of the first viewport sideways at the
+         exact moment the visitor is looking at it. */
+      html {
+        scrollbar-gutter: stable;
+      }
+      .boot-lock {
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      THESIS: This surface is a drawn plan you stand inside, not a gallery of photographs; it refuses the full-bleed sofa over cream with a thin serif headline that every furniture site — including both references — ships.
+      OWN-WORLD: Diazo sepia print. Umber ground, bone linework, hatched floor fills, dimension strings, numbered station markers, brass detail, verdigris for the live state. Archivo expanded caps for voice, Martian Mono for every measurement. The furniture is the only warm-lit thing on the sheet.
+      STORY: The visitor understands these pieces are drawn and dimensioned before they are built, believes that discipline is why they last, and walks the plan to the collection index.
+      FIRST VIEWPORT: Eye level inside Room 01. The sofa fills two thirds of the frame in lamplight, sat on a sheet whose hatching and 12cm walls read as a drawing. Headline left at display scale, a live dimension string under the sofa, station marker top right, scale bar and north arrow low left, primary action on the circulation path.
+      FORM: The architect's furnished floor plan; candidate 6 of 7 on my ordered list; seed key fd66e9a9.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+    -->
+
+    <!--
+      Preloader. The sheet draws itself while Three.js parses, the plan texture
+      is generated and the shaders compile. Progress is tied to those real
+      milestones in src/preloader.js, never to a timer, and a failsafe dismisses
+      it no matter what fails — a visitor must never be stuck behind this.
+    -->
+    <div class="boot" id="boot" role="status" aria-label="Drawing the showroom plan">
+      <svg class="boot__plan" viewBox="0 0 14 13" aria-hidden="true">
+        <rect x="0.6" y="0.6" width="6.8" height="5.8" pathLength="1" />
+        <rect x="7.9" y="0.6" width="5.5" height="4.8" pathLength="1" />
+        <rect x="0.6" y="6.9" width="5.8" height="5.5" pathLength="1" />
+        <rect x="6.9" y="5.9" width="6.5" height="6.5" pathLength="1" />
+        <path
+          class="boot__walk"
+          d="M3.6 5.6 Q3.6 3.4 7 2.4 Q10.65 4.4 8.6 6.6 Q3.9 7.6 3.2 11.4 Q7.6 11.6 10.2 10.9"
+        />
+      </svg>
+
+      <div class="boot__block">
+        <p class="boot__mark">Full Scale</p>
+        <div class="boot__rule"><span class="boot__fill"></span></div>
+        <p class="boot__meta">
+          <span id="boot-step">Setting out the sheet</span>
+          <span class="boot__pct"><span id="boot-pct">0</span>%</span>
+        </p>
+      </div>
+    </div>
+
+    <a class="skip" href="#collection">Skip to the collection</a>
+
+    <!-- The live sheet: one WebGL canvas behind the whole document. -->
+    <div class="stage" aria-hidden="true">
+      <canvas id="sheet"></canvas>
+      <div class="stage__grain"></div>
+      <div class="stage__vignette"></div>
+    </div>
+
+    <!-- Crisp DOM annotations projected from points in the 3D scene. -->
+    <div class="annos" id="annos" aria-hidden="true"></div>
+
+    <header class="masthead">
+      <a class="wordmark" href="#threshold" aria-label="Full Scale, home">
+        <svg class="wordmark__scale" viewBox="0 0 44 12" aria-hidden="true">
+          <path d="M1 8.5h42M1 4v8.5M12 6v6.5M23 4v8.5M34 6v6.5M43 4v8.5" />
+        </svg>
+        <span class="wordmark__name">Full<i>&thinsp;</i>Scale</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <ul>
+          <li><a href="#living" data-nav>Rooms</a></li>
+          <li><a href="#collection" data-nav>Collection</a></li>
+          <li><a href="#workshop" data-nav>Workshop</a></li>
+          <li><a href="#enquire" data-nav>Enquire</a></li>
+        </ul>
+      </nav>
+
+      <div class="masthead__right">
+        <div class="revbox" aria-hidden="true">
+          <span class="revbox__k">Sheet</span>
+          <span class="revbox__v" id="sheet-no">01</span>
+        </div>
+        <a class="stamp" href="#enquire">Account</a>
+        <button
+          class="menubtn"
+          id="menubtn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="drawer"
+        >
+          <span class="vh">Sheet index</span>
+          <svg viewBox="0 0 22 14" aria-hidden="true">
+            <path d="M1 1h20M1 7h20M1 13h20" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- The phone's navigation: the sheet's own index, not a stock hamburger
+         panel. Below 820px the nav row has nowhere to live. -->
+    <div class="drawer" id="drawer" hidden>
+      <nav aria-label="Sheet index">
+        <ol>
+          <li><a href="#living"><b>01</b><span>Living</span></a></li>
+          <li><a href="#dining"><b>02</b><span>Dining</span></a></li>
+          <li><a href="#rest"><b>03</b><span>Rest</span></a></li>
+          <li><a href="#work"><b>04</b><span>Work</span></a></li>
+          <li><a href="#collection"><b>—</b><span>Collection index</span></a></li>
+          <li><a href="#workshop"><b>W</b><span>The workshop</span></a></li>
+          <li><a href="#enquire"><b>00</b><span>Enquire</span></a></li>
+        </ol>
+      </nav>
+      <p class="drawer__foot">
+        <span>Full Scale</span>
+        <span>Sheet 01 of 01 · Rev C</span>
+      </p>
+    </div>
+
+    <!-- Station rail: the plan's circulation, and the page's real progress indicator. -->
+    <aside class="rail" aria-label="Plan stations">
+      <ol id="rail-list">
+        <li><a href="#living" data-rail="living"><b>01</b><span>Living</span></a></li>
+        <li><a href="#dining" data-rail="dining"><b>02</b><span>Dining</span></a></li>
+        <li><a href="#rest" data-rail="rest"><b>03</b><span>Rest</span></a></li>
+        <li><a href="#work" data-rail="work"><b>04</b><span>Work</span></a></li>
+      </ol>
+      <div class="rail__scalebar" aria-hidden="true">
+        <svg viewBox="0 0 8 62"><path d="M4 1v60M1 1h6M1 61h6M2 31h4" /></svg>
+        <span>1 m</span>
+      </div>
+    </aside>
+
+    <main>
+      <!-- ═══ THRESHOLD ═══════════════════════════════════════════════ -->
+      <section class="station station--threshold" id="threshold" data-station="threshold">
+        <div class="threshold">
+          <h1 class="display display--xl" data-reveal>
+            A room is a<br /><em>drawing</em> you<br />live inside.
+          </h1>
+          <p class="lede" data-reveal>
+            We draw every piece at full scale before a single board is cut — then build it to be
+            sat in for thirty years. Walk the plan and stand in it.
+          </p>
+          <div class="actions" data-reveal>
+            <a class="btn btn--primary" href="#living">
+              <span>Walk the showroom</span>
+              <svg viewBox="0 0 20 10" aria-hidden="true"><path d="M0 5h18M13.5 1l4.5 4-4.5 4" /></svg>
+            </a>
+            <a class="btn btn--ghost" href="#workshop">How it's drawn</a>
+          </div>
+        </div>
+
+        <!-- Drawing furniture: the sheet's own corner stamp, not a label above the heading. -->
+        <p class="sheet-stamp" aria-hidden="true">
+          <svg viewBox="0 0 28 10" aria-hidden="true"><path d="M1 9h26M1 5.5v3.5M27 5.5v3.5" /></svg>
+          Sheet 01 · Living · drawn 1:1
+        </p>
+
+        <p class="scrollcue" data-reveal aria-hidden="true">
+          <span>Scroll to lift the sheet</span>
+          <svg viewBox="0 0 10 30"><path d="M5 0v24M1 20l4 5 4-5" /></svg>
+        </p>
+      </section>
+
+      <!-- ═══ THE LIFT ════════════════════════════════════════════════ -->
+      <section class="station station--lift" id="lift" data-station="lift">
+        <div class="lift">
+          <h2 class="display display--l" data-reveal>
+            You were standing<br />inside the drawing.
+          </h2>
+          <p class="lede lede--center" data-reveal>
+            Four rooms, one sheet. Every wall is 120&nbsp;mm tall so you can see the whole plan at
+            once and still walk into any part of it.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══ STATION 01 · LIVING ═════════════════════════════════════ -->
+      <section class="station station--room" id="living" data-station="living">
+        <div class="room" data-reveal>
+          <p class="room__marker" aria-hidden="true"><b>01</b></p>
+          <h2 class="display display--m">The Ovett<br />three-seat</h2>
+          <p class="copy">
+            Full-grain aniline leather over a kiln-dried ash frame, seat cushions on webbing rather
+            than springs, so the give is even after a decade of the same person sitting in the same
+            place.
+          </p>
+
+          <dl class="specs">
+            <div><dt>Overall</dt><dd>2180 × 940 × 720&nbsp;mm</dd></div>
+            <div><dt>Seat height</dt><dd>430&nbsp;mm</dd></div>
+            <div><dt>Frame</dt><dd>Kiln-dried ash, doweled</dd></div>
+            <div><dt>Fill</dt><dd>Feather over HR foam core</dd></div>
+          </dl>
+
+          <fieldset class="swatches">
+            <legend>Hide &amp; cloth</legend>
+            <div class="swatches__row" id="swatches" role="radiogroup" aria-label="Upholstery">
+              <button
+                type="button"
+                role="radio"
+                aria-checked="true"
+                class="swatch is-on"
+                data-swatch="tan"
+                style="--sw: #c98a52"
+              >
+                <span class="swatch__name">Tan aniline</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked="false"
+                class="swatch"
+                data-swatch="chestnut"
+                style="--sw: #8d4f30"
+              >
+                <span class="swatch__name">Chestnut</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked="false"
+                class="swatch"
+                data-swatch="olive"
+                style="--sw: #6f7351"
+              >
+                <span class="swatch__name">Olive canvas</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked="false"
+                class="swatch"
+                data-swatch="bone"
+                style="--sw: #c9b79a"
+              >
+                <span class="swatch__name">Bone linen</span>
+              </button>
+            </div>
+            <p class="swatches__hint" aria-live="polite" id="swatch-live">
+              Tan aniline — darkens with light, never evenly.
+            </p>
+          </fieldset>
+        </div>
+      </section>
+
+      <!-- ═══ STATION 02 · DINING ═════════════════════════════════════ -->
+      <section class="station station--room station--room-right" id="dining" data-station="dining">
+        <div class="room" data-reveal>
+          <p class="room__marker" aria-hidden="true"><b>02</b></p>
+          <h2 class="display display--m">The Marlow<br />refectory</h2>
+          <p class="copy">
+            A single 40&nbsp;mm oak slab on splayed legs, joined with drawbore tenons you can see
+            from underneath. It takes eight, or ten when nobody minds elbows.
+          </p>
+          <dl class="specs">
+            <div><dt>Overall</dt><dd>2400 × 950 × 740&nbsp;mm</dd></div>
+            <div><dt>Top</dt><dd>40&nbsp;mm European oak</dd></div>
+            <div><dt>Joinery</dt><dd>Drawbore mortise &amp; tenon</dd></div>
+            <div><dt>Finish</dt><dd>Hardwax oil, matte</dd></div>
+          </dl>
+          <p class="aside-note">
+            Pendants shown are the Hale three-drop, sold as a set and wired for a 2.7&nbsp;m ceiling.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══ STATION 03 · REST ═══════════════════════════════════════ -->
+      <section class="station station--room" id="rest" data-station="rest">
+        <div class="room" data-reveal>
+          <p class="room__marker" aria-hidden="true"><b>03</b></p>
+          <h2 class="display display--m">The Wren<br />bed &amp; stand</h2>
+          <p class="copy">
+            A low ash platform with a webbed base and no headboard to speak of — just a padded
+            batten at pillow height, so the wall behind it stays the wall you chose.
+          </p>
+          <dl class="specs">
+            <div><dt>Overall</dt><dd>2050 × 1620 × 380&nbsp;mm</dd></div>
+            <div><dt>Fits</dt><dd>King, 1500 × 2000&nbsp;mm</dd></div>
+            <div><dt>Base</dt><dd>Elastic webbing on ash slats</dd></div>
+            <div><dt>Stand</dt><dd>Single drawer, brass pull</dd></div>
+          </dl>
+          <p class="aside-note">
+            The Pell table lamp throws 2200&nbsp;K downward only — enough to read one page, not
+            enough to wake anybody.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══ STATION 04 · WORK ═══════════════════════════════════════ -->
+      <section class="station station--room station--room-right" id="work" data-station="work">
+        <div class="room" data-reveal>
+          <p class="room__marker" aria-hidden="true"><b>04</b></p>
+          <h2 class="display display--m">The Quill<br />desk &amp; shelf</h2>
+          <p class="copy">
+            Desk depth set at 700&nbsp;mm because that is where a screen stops straining your eyes,
+            and a cable tray along the back rail because the alternative is a knot by the skirting.
+          </p>
+          <dl class="specs">
+            <div><dt>Overall</dt><dd>1600 × 700 × 735&nbsp;mm</dd></div>
+            <div><dt>Top</dt><dd>28&nbsp;mm oak, eased edge</dd></div>
+            <div><dt>Cable tray</dt><dd>Full width, 90&nbsp;mm deep</dd></div>
+            <div><dt>Shelf</dt><dd>4 bays, 1800&nbsp;mm tall</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ═══ THE SHEET · COLLECTION INDEX ════════════════════════════ -->
+      <section class="station station--sheet" id="collection" data-station="sheet">
+        <div class="sheet-index" data-reveal>
+          <h2 class="display display--l">The whole sheet</h2>
+          <p class="lede">
+            Eleven pieces, drawn as one system. Anything on this sheet sits with anything else on
+            it — the proportions were set together, not collected.
+          </p>
+
+          <div class="index-scroll">
+            <table class="index">
+              <caption class="vh">Collection index, by station</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Ref</th>
+                  <th scope="col">Piece</th>
+                  <th scope="col">Room</th>
+                  <th scope="col">Overall (mm)</th>
+                  <th scope="col">Material</th>
+                  <th scope="col">Lead</th>
+                </tr>
+              </thead>
+              <tbody id="index-body"></tbody>
+            </table>
+          </div>
+
+          <p class="note-strip">
+            Dimensions are as drawn and hold to ±3&nbsp;mm. Lead times are from order, not from
+            deposit.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══ WORKSHOP · MATERIAL PROOF ═══════════════════════════════ -->
+      <section class="station station--workshop" id="workshop" data-station="workshop">
+        <div class="workshop" data-reveal>
+          <h2 class="display display--l">Drawn, then<br />made twice.</h2>
+
+          <ol class="steps">
+            <li>
+              <p class="steps__n">Step 1</p>
+              <h3>Full-scale elevation</h3>
+              <p>
+                Every piece is drawn at 1:1 on the shop wall. If a curve looks wrong at life size it
+                is wrong, and no rendering will tell you that.
+              </p>
+            </li>
+            <li>
+              <p class="steps__n">Step 2</p>
+              <h3>A prototype nobody sells</h3>
+              <p>
+                The first build gets sat in for six weeks by whoever is in the workshop, then taken
+                apart to see which joint moved.
+              </p>
+            </li>
+            <li>
+              <p class="steps__n">Step 3</p>
+              <h3>The one you get</h3>
+              <p>
+                Cut from the corrected drawing, stamped with its sheet number and the initials of
+                the person who assembled it.
+              </p>
+            </li>
+          </ol>
+
+          <div class="finishes">
+            <h3 class="hd-sm">Finish library</h3>
+            <ul class="finishes__list">
+              <li><span style="--sw: #c98a52"></span><b>Tan aniline</b><i>hide, waxed</i></li>
+              <li><span style="--sw: #8d4f30"></span><b>Chestnut</b><i>hide, pull-up</i></li>
+              <li><span style="--sw: #6f7351"></span><b>Olive canvas</b><i>cloth, 480 gsm</i></li>
+              <li><span style="--sw: #c9b79a"></span><b>Bone linen</b><i>cloth, washed</i></li>
+              <li><span style="--sw: #9a6b3f"></span><b>Oiled oak</b><i>timber, hardwax</i></li>
+              <li><span style="--sw: #d8c9b4"></span><b>White ash</b><i>timber, soap</i></li>
+              <li><span style="--sw: #c08f4a"></span><b>Brass</b><i>metal, unlacquered</i></li>
+              <li><span style="--sw: #3f3a34"></span><b>Blacked steel</b><i>metal, waxed</i></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ ENQUIRE ═════════════════════════════════════════════════ -->
+      <section class="station station--enquire" id="enquire" data-station="enquire">
+        <div class="enquire" data-reveal>
+          <h2 class="display display--l">Stand in it<br />before you buy it.</h2>
+          <p class="lede">
+            Send the room you are furnishing and we will draw your plan at full scale, with the
+            pieces placed, before anyone talks about money.
+          </p>
+
+          <form class="form" id="enquire-form" novalidate>
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required />
+              <p class="field__err" data-err-for="f-name"></p>
+            </div>
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required />
+              <p class="field__err" data-err-for="f-email"></p>
+            </div>
+            <div class="field field--wide">
+              <label for="f-room">The room <span>width × depth, and what it is for</span></label>
+              <textarea id="f-room" name="room" rows="3" required></textarea>
+              <p class="field__err" data-err-for="f-room"></p>
+            </div>
+            <button class="btn btn--primary btn--submit" type="submit">
+              <span>Request a plan</span>
+              <svg viewBox="0 0 20 10" aria-hidden="true"><path d="M0 5h18M13.5 1l4.5 4-4.5 4" /></svg>
+            </button>
+            <p class="form__status" role="status" id="form-status"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══ TITLEBLOCK · FOOTER ═══════════════════════════════════════ -->
+    <footer class="titleblock" id="titleblock">
+      <div class="tb__grid">
+        <div class="tb__cell tb__cell--brand">
+          <span class="tb__k">Drawing</span>
+          <p class="tb__mark">Full<i>&thinsp;</i>Scale</p>
+          <p class="tb__sub">Furniture drawn at 1:1 and built to be sat in.</p>
+        </div>
+
+        <div class="tb__cell">
+          <span class="tb__k">Rooms</span>
+          <ul>
+            <li><a href="#living">01 Living</a></li>
+            <li><a href="#dining">02 Dining</a></li>
+            <li><a href="#rest">03 Rest</a></li>
+            <li><a href="#work">04 Work</a></li>
+          </ul>
+        </div>
+
+        <div class="tb__cell">
+          <span class="tb__k">Sheet</span>
+          <ul>
+            <li><a href="#collection">Collection index</a></li>
+            <li><a href="#workshop">The workshop</a></li>
+            <li><a href="#workshop">Finish library</a></li>
+            <li><a href="#enquire">Enquire</a></li>
+          </ul>
+        </div>
+
+        <div class="tb__cell tb__cell--app">
+          <span class="tb__k">Plan in your pocket</span>
+          <p class="tb__sub">Measure a room, place a piece, see it at scale.</p>
+          <div class="tb__apps">
+            <a class="appbtn" href="#enquire" aria-label="Download for iOS">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M16.3 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.7.8-3.4.8s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.3 2.9 2.3s1.6-.8 3.1-.8 1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.3-2.5 1.3-2.6-.1 0-2.5-1-2.7-3.7Z"/>
+                <path d="M14.4 5.9c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1 1.8-.9 2.8 1 .1 2-.5 2.7-1.3Z"/>
+              </svg>
+              <span>iOS</span>
+            </a>
+            <a class="appbtn" href="#enquire" aria-label="Download for Android">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 9.5h14v8a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 17.5v-8Z"/>
+                <path d="M8.2 9.5C8.2 7.4 9.9 5.7 12 5.7s3.8 1.7 3.8 3.8" />
+                <path d="m9 5 -1-1.7M15 5l1-1.7M2.8 11.6v4.2M21.2 11.6v4.2M9 19v2.2M15 19v2.2"/>
+              </svg>
+              <span>Android</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="tb__strip">
+        <span><b class="tb__k">Scale</b> 1:1</span>
+        <span><b class="tb__k">Sheet</b> 01 of 01</span>
+        <span><b class="tb__k">Revision</b> C</span>
+        <span><b class="tb__k">Drawn</b> Full Scale workshop</span>
+        <span class="tb__strip-end">
+          <a href="#threshold">Back to the threshold</a>
+        </span>
+      </div>
+    </footer>
+
+    <noscript>
+      <p class="noscript">
+        The showroom plan is drawn with WebGL. The whole collection, every dimension and the
+        enquiry form are on this page and work without it.
+      </p>
+    </noscript>
+  </body>
+</html>

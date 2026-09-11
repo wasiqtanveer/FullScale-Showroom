@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T00:00:00.000Z",
+  "title": "Design System: Full Scale",
+  "extensions": {
+    "colorMeta": {
+      "umber-700": {
+        "role": "neutral",
+        "displayName": "Umber Ground",
+        "canonical": "#372619",
+        "tonalRamp": [
+          "#1e1510",
+          "#2a1e16",
+          "#372619",
+          "#46311f",
+          "#543b26"
+        ]
+      },
+      "bone-100": {
+        "role": "neutral",
+        "displayName": "Bone Linework",
+        "canonical": "#f2e7d3",
+        "tonalRamp": [
+          "#f2e7d3",
+          "#cbb79a",
+          "#a08d72"
+        ]
+      },
+      "tan-500": {
+        "role": "primary",
+        "displayName": "Tan Aniline",
+        "canonical": "#c98a52",
+        "tonalRamp": [
+          "#e3b183",
+          "#c98a52",
+          "#8d4f30"
+        ]
+      },
+      "live": {
+        "role": "secondary",
+        "displayName": "Revision Verdigris",
+        "canonical": "#8fb0a0",
+        "tonalRamp": [
+          "#8fb0a0",
+          "#5f7d6e"
+        ]
+      },
+      "sheet-ground": {
+        "role": "neutral",
+        "displayName": "Sheet Ground",
+        "canonical": "#402d1f",
+        "tonalRamp": [
+          "#402d1f"
+        ]
+      },
+      "alarm": {
+        "role": "tertiary",
+        "displayName": "Alarm Ochre",
+        "canonical": "#e0996a",
+        "tonalRamp": [
+          "#e0996a"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Archivo at width 116, weight 700, uppercase. Headings only. Emphasis inside a heading drops to width 78 / weight 400 in tan."
+      },
+      "measure": {
+        "displayName": "Measurement",
+        "purpose": "Martian Mono. Dimensions, reference codes, lead times, and the text drawn onto the sheet texture. Never prose."
+      },
+      "label": {
+        "displayName": "Tracked Label",
+        "purpose": "Martian Mono, 0.58-0.72rem, 0.12-0.18em tracking, uppercase. Nav, spec keys, buttons, titleblock."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-lift",
+        "value": "0 26px 60px -30px rgba(10, 6, 3, 0.85)",
+        "purpose": "The single DOM shadow: a copy panel lifting off the sheet."
+      },
+      {
+        "name": "swatch-hover",
+        "value": "0 8px 18px -8px rgba(10, 6, 3, 0.9)",
+        "purpose": "Upholstery swatch rising 2px under the pointer."
+      },
+      {
+        "name": "swatch-selected",
+        "value": "0 0 0 1px #2a1e16, 0 0 0 3px #8fb0a0",
+        "purpose": "Selected upholstery, drawn as a double rule rather than a glow."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 3px rgba(143, 176, 160, 0.16)",
+        "purpose": "Field focus, paired with a verdigris border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "boot-handoff",
+        "value": "hold 320ms, drawing out (opacity 0.5s / translateY -1.1rem 0.62s), ground opacity 0.72s from +380ms",
+        "purpose": "The preloader's exit. Its ground is the page background to the byte, so it dissolves in place while the first viewport lights and animates up through it. Sliding the slab off had nothing to reveal and read as a cut."
+      },
+      {
+        "name": "stage-lighting",
+        "value": "opacity 1.15s cubic-bezier(0.33,0,0.2,1), transform scale(1.035)->none 1.5s var(--ease)",
+        "purpose": "The WebGL sheet coming up through the clearing ground. Gated on html.booting so every failure path shows the sheet outright and instantly, with no transition to wait on."
+      },
+      {
+        "name": "boot-stroke",
+        "value": "stroke-dashoffset 0.4s var(--ease), 40ms stagger",
+        "purpose": "The plan drawing itself. Short and barely staggered: at 1.05s the linework visibly trailed the figure, and the drawing has to lead the number."
+      },
+      {
+        "name": "boot-figure",
+        "value": "1 - exp(-dt * 5.5), minimum visible 1900ms",
+        "purpose": "Time-based easing of the progress figure, so a blocked main thread cannot strand it. The minimum is a declared opening beat, skipped under reduced motion."
+      },
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Exponential ease-out. The page's one curve: reveals, hovers, rail states."
+      },
+      {
+        "name": "ease-soft",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "The button fill wipe, and anything that travels rather than settles."
+      },
+      {
+        "name": "camera-blend",
+        "value": "smootherstep t^3(6t^2-15t+10)",
+        "purpose": "Scroll-linked camera interpolation between stations. Eased on BOTH ends: an ease-out here flings the camera at the next room on the first wheel nudge."
+      },
+      {
+        "name": "camera-damping",
+        "value": "1 - exp(-dt * 5.2)",
+        "purpose": "Critically damped follow on the camera rig, so it never snaps and never drifts."
+      },
+      {
+        "name": "reveal",
+        "value": "0.95s var(--ease), delay 0/70/140ms",
+        "purpose": "Content enters from y+26px. Three delays, one curve, no per-section entrance. Opacity and transform only — never an animated filter: a 7px blur on display-scale text delayed the first animated frame of the hand-off by over a second."
+      },
+      {
+        "name": "anno-stagger",
+        "value": "110ms per label, 220ms lead-in",
+        "purpose": "Projected annotations resolving in order when a station becomes active."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "marker-inset",
+        "value": "560px"
+      },
+      {
+        "name": "form-two-up",
+        "value": "640px"
+      },
+      {
+        "name": "finishes-four-up",
+        "value": "680px"
+      },
+      {
+        "name": "annotations-on",
+        "value": "700px"
+      },
+      {
+        "name": "hero-stacked",
+        "value": "760px"
+      },
+      {
+        "name": "titleblock-columns",
+        "value": "760px"
+      },
+      {
+        "name": "nav-row",
+        "value": "820px"
+      },
+      {
+        "name": "station-rail",
+        "value": "900px"
+      },
+      {
+        "name": "panel-side-swap",
+        "value": "1080px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Preloader",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The opening beat. The four rooms of the real plan stroke themselves in over a dimension string. Styles are inline in the document head, because a preloader that waits for the CSS bundle is a blank screen with extra steps. It exits as a hand-off, not a reveal: its ground is the page's own background colour, so the drawing comes off first and the ground then dissolves in place while the first viewport animates up through it.",
+      "html": "<div class=\"ds-boot\"><svg viewBox=\"0 0 14 13\"><rect x=\"0.6\" y=\"0.6\" width=\"6.8\" height=\"5.8\" pathLength=\"1\"/></svg><p class=\"ds-boot-meta\"><span>Lighting the room</span><span>88%</span></p></div>",
+      "css": ".ds-boot { position: fixed; inset: 0; display: grid; place-content: center; gap: 2.25rem; background: #2a1e16; color: #f2e7d3; font-family: 'Martian Mono Variable', monospace; transition: opacity 0.72s cubic-bezier(0.33,0,0.2,1); } .ds-boot.is-leaving svg, .ds-boot.is-leaving .ds-boot-meta { opacity: 0; transform: translateY(-1.1rem); } .ds-boot.is-done { opacity: 0; pointer-events: none; } .ds-boot svg { width: min(74vw, 26rem); fill: none; stroke: #f2e7d3; stroke-width: 0.07; } .ds-boot rect { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p, 0)); transition: stroke-dashoffset 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-boot-meta { display: flex; justify-content: space-between; font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: #cbb79a; font-variant-numeric: tabular-nums lining-nums; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The page's primary action. Ruled rectangle, mono label, travelling arrow rule.",
+      "html": "<a class=\"ds-btn\" href=\"#\"><span>Walk the showroom</span><svg viewBox=\"0 0 20 10\"><path d=\"M0 5h18M13.5 1l4.5 4-4.5 4\"/></svg></a>",
+      "css": ".ds-btn { position: relative; display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.82rem 1.3rem; background: #c98a52; color: #2a1c0f; border: 1px solid #c98a52; border-radius: 0; font-family: 'Martian Mono Variable', monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; text-decoration: none; overflow: hidden; transition: border-color 0.35s cubic-bezier(0.16,1,0.3,1); } .ds-btn::before { content: ''; position: absolute; inset: 0; background: #e3b183; opacity: 0; transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1); } .ds-btn > * { position: relative; z-index: 1; } .ds-btn svg { width: 20px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.4; overflow: visible; transition: transform 0.45s cubic-bezier(0.16,1,0.3,1); } .ds-btn:hover { border-color: #e3b183; } .ds-btn:hover::before { opacity: 1; } .ds-btn:hover svg { transform: translateX(4px); }"
+    },
+    {
+      "name": "Copy Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The one container. Any text block standing on the lit 3D scene gets this ground.",
+      "html": "<div class=\"ds-panel\"><h2>The Ovett three-seat</h2><p>Full-grain aniline leather over a kiln-dried ash frame.</p></div>",
+      "css": ".ds-panel { position: relative; padding: 2rem; background: linear-gradient(to bottom right, rgba(24,17,12,0.985), rgba(24,17,12,0.955)); backdrop-filter: blur(18px) saturate(115%); border: 1px solid rgba(242,231,211,0.16); border-radius: 0; box-shadow: 0 26px 60px -30px rgba(10,6,3,0.85); color: #f2e7d3; } .ds-panel::before, .ds-panel::after { content: ''; position: absolute; width: 13px; height: 13px; border: 1px solid #a08d72; } .ds-panel::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; } .ds-panel::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }"
+    },
+    {
+      "name": "Specification List",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "A drawing's schedule: mono key in tracked caps, mono value, ruled between rows.",
+      "html": "<dl class=\"ds-specs\"><div><dt>Overall</dt><dd>2180 &times; 940 &times; 720&nbsp;mm</dd></div><div><dt>Seat height</dt><dd>430&nbsp;mm</dd></div></dl>",
+      "css": ".ds-specs { margin: 0; display: grid; border-top: 1px solid rgba(242,231,211,0.16); } .ds-specs > div { display: grid; grid-template-columns: 8.5rem 1fr; gap: 0.75rem; padding: 0.58rem 0; border-bottom: 1px solid rgba(242,231,211,0.16); } .ds-specs dt { font-family: 'Martian Mono Variable', monospace; font-size: 0.64rem; letter-spacing: 0.13em; text-transform: uppercase; color: #cbb79a; padding-top: 0.18rem; } .ds-specs dd { margin: 0; font-family: 'Martian Mono Variable', monospace; font-size: 0.8rem; color: #f2e7d3; font-variant-numeric: tabular-nums lining-nums; }"
+    },
+    {
+      "name": "Projected Annotation",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The signature component. A DOM label positioned each frame from a 3D anchor, joined to its point by a leader rule and a verdigris dot. DOM text, never texture.",
+      "html": "<div class=\"ds-anno\"><span class=\"ds-anno-dot\"></span><span class=\"ds-anno-text\"><b>2180 &times; 940</b><i>mm</i></span></div>",
+      "css": ".ds-anno { position: relative; display: flex; align-items: center; height: 60px; } .ds-anno-dot { position: absolute; top: 0; left: 0; width: 5px; height: 5px; border-radius: 50%; background: #8fb0a0; box-shadow: 0 0 0 3px rgba(143,176,160,0.18); transform: translate(-50%,-50%); } .ds-anno-text { position: absolute; top: 30px; left: 0; transform: translateX(-50%); display: grid; gap: 1px; padding: 5px 9px; background: rgba(20,13,8,0.82); backdrop-filter: blur(6px); border: 1px solid rgba(242,231,211,0.16); white-space: nowrap; } .ds-anno-text b { font-family: 'Martian Mono Variable', monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: #f2e7d3; line-height: 1.1; font-variant-numeric: tabular-nums lining-nums; } .ds-anno-text i { font-family: 'Martian Mono Variable', monospace; font-style: normal; font-size: 0.56rem; letter-spacing: 0.13em; text-transform: uppercase; color: #cbb79a; line-height: 1.1; }"
+    },
+    {
+      "name": "Station Marker",
+      "kind": "chip",
+      "refersTo": "station-marker",
+      "description": "A circled number. The only circle in the system, and the only place a station number may appear — rail, panel margin, sheet, or phone drawer, never as a label above a heading.",
+      "html": "<p class=\"ds-marker\"><b>01</b></p>",
+      "css": ".ds-marker { width: 2.9rem; height: 2.9rem; margin: 0; display: grid; place-items: center; border: 1.5px solid #8fb0a0; border-radius: 50%; background: #1e1510; } .ds-marker b { font-family: 'Martian Mono Variable', monospace; font-size: 0.88rem; font-weight: 700; letter-spacing: 0.04em; color: #8fb0a0; }"
+    },
+    {
+      "name": "Upholstery Swatch",
+      "kind": "chip",
+      "refersTo": "swatch",
+      "description": "A real radiogroup member. Arrow-key navigable, 46px target, and it changes the material on the sofa mesh in the scene rather than swapping an image.",
+      "html": "<button type=\"button\" role=\"radio\" aria-checked=\"true\" class=\"ds-swatch is-on\" style=\"--sw:#c98a52\"><span class=\"ds-vh\">Tan aniline</span></button>",
+      "css": ".ds-swatch { position: relative; width: 46px; height: 46px; padding: 0; border: 1px solid rgba(242,231,211,0.34); background: var(--sw); border-radius: 0; cursor: pointer; transition: box-shadow 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1); } .ds-swatch::after { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(30,21,16,0); transition: border-color 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-swatch:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -8px rgba(10,6,3,0.9); } .ds-swatch.is-on { box-shadow: 0 0 0 1px #2a1e16, 0 0 0 3px #8fb0a0; } .ds-swatch.is-on::after { border-color: rgba(30,21,16,0.5); } .ds-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Square, hairline, verdigris on focus. Error slot reserves its height so nothing reflows.",
+      "html": "<div class=\"ds-field\"><label for=\"n\">Name</label><input id=\"n\" type=\"text\"><p class=\"ds-err\"></p></div>",
+      "css": ".ds-field { display: grid; gap: 0.5rem; } .ds-field label { font-family: 'Martian Mono Variable', monospace; font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: #cbb79a; } .ds-field input { font-family: 'Archivo Variable', sans-serif; font-size: 1rem; color: #f2e7d3; background: rgba(20,13,8,0.6); border: 1px solid rgba(242,231,211,0.34); border-radius: 0; padding: 0.72rem 0.85rem; caret-color: #8fb0a0; transition: border-color 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-field input:hover { border-color: #a08d72; } .ds-field input:focus-visible { outline: none; border-color: #8fb0a0; background: rgba(20,13,8,0.85); box-shadow: 0 0 0 3px rgba(143,176,160,0.16); } .ds-field input[aria-invalid='true'] { border-color: #e0996a; } .ds-err { font-family: 'Martian Mono Variable', monospace; font-size: 0.68rem; color: #e0996a; min-height: 1em; }"
+    },
+    {
+      "name": "Station Rail",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Fixed left column of circled mono numbers; the label slides in on hover or when the station is active. Doubles as the page's scroll position.",
+      "html": "<ol class=\"ds-rail\"><li><a href=\"#living\" class=\"is-on\"><b>01</b><span>Living</span></a></li><li><a href=\"#dining\"><b>02</b><span>Dining</span></a></li></ol>",
+      "css": ".ds-rail { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; } .ds-rail a { display: grid; grid-template-columns: 1.9rem 1fr; align-items: center; gap: 0.75rem; text-decoration: none; color: #a08d72; transition: color 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-rail a b { font-family: 'Martian Mono Variable', monospace; font-size: 0.7rem; font-weight: 600; width: 1.9rem; height: 1.9rem; display: grid; place-items: center; border: 1px solid rgba(242,231,211,0.16); border-radius: 50%; transition: border-color 0.4s, color 0.4s, background 0.4s; } .ds-rail a span { font-family: 'Martian Mono Variable', monospace; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0; transform: translateX(-6px); transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-rail a:hover, .ds-rail a.is-on { color: #f2e7d3; } .ds-rail a:hover span, .ds-rail a.is-on span { opacity: 1; transform: translateX(0); } .ds-rail a.is-on b { border-color: #8fb0a0; color: #8fb0a0; background: rgba(143,176,160,0.1); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Showroom Plan",
+    "overview": "Full Scale is a furniture landing page built as a single architect's sheet the visitor stands inside. The whole surface is one WebGL scene: a drawn floor plan lying flat, 120 mm walls standing on it, and procedurally modelled furniture sitting on its own dashed plan symbol. Scrolling walks a camera between nine held stations; the copy rides over that scene in ruled, near-opaque panels.\n\nThe world is a diazo sepia print, not a blueprint. Everything structural is bone linework on umber ground; everything warm is the furniture, which is the only lit material in the frame. That single contrast carries the argument: the drawing is disciplined and cool, the thing it produces is warm and worth sitting in.\n\nThe register is evening. Dark is chosen from the use scene -- a person at home with one lamp on, picturing a sofa in a room they already live in -- never as a default. Because the ground is dark and the palette is narrow, light does the work colour usually does: the lamp pools, the key light, and the pointer-tracked hand light are the composition's primary tools.",
+    "keyCharacteristics": [
+      "One WebGL scene behind the whole document, not a hero animation",
+      "Radius zero everywhere; circles reserved for markers; corner ticks instead of rounding",
+      "Two faces by job: Archivo expanded caps for voice, Martian Mono for every measurement",
+      "Tan appears on furniture and the primary action only -- nothing else is warm",
+      "Verdigris green means now: active station, circulation path, focus, success",
+      "Annotations are DOM text projected from 3D anchors, never baked into texture",
+      "Every piece modelled procedurally from four moves: rounded slab, sagging cushion, tapered leg, painted contact shadow",
+      "A preloader whose progress is measured from real milestones, whose label is derived from the figure on screen, and which can never trap a visitor",
+      "A preloader that leaves by handing over rather than uncovering: its ground is the page background, so the drawing comes off and the ground dissolves while the first viewport animates up through it"
+    ],
+    "rules": [
+      {
+        "name": "The Only Lit Thing",
+        "body": "Tan appears on furniture and on the primary action. Nothing else on the page may be warm -- no warm panel, no warm rule, no warm heading. The moment a second element goes tan, the furniture stops being the subject.",
+        "section": "colors"
+      },
+      {
+        "name": "Green Means Now",
+        "body": "Verdigris is never decoration and never a category colour. If it is on screen, it is describing where the visitor currently is.",
+        "section": "colors"
+      },
+      {
+        "name": "Bone-500 Is Not For Reading",
+        "body": "bone-500 measures around 5:1 on the umber grounds, which passes, but it is reserved for hairlines, scale bars, corner ticks and the sheet stamp. Body and secondary text use bone-300 or bone-100.",
+        "section": "colors"
+      },
+      {
+        "name": "Mono Is Earned, Not Worn",
+        "body": "Monospace is for measurement, reference codes and drawing annotation. It is never used to make prose look technical.",
+        "section": "typography"
+      },
+      {
+        "name": "Figures Are Tabular",
+        "body": "Every dimension, reference and lead time uses tabular-nums lining-nums, so a column of measurements aligns the way it would on a real schedule.",
+        "section": "typography"
+      },
+      {
+        "name": "Reserve The Masthead, Never Centre Past It",
+        "body": "The masthead is fixed at 4.6rem and every station pays for it in top padding. Content taller than the viewport must start below it; vertically centring a tall block inside a taller-than-screen section is what puts headings under the navigation.",
+        "section": "layout"
+      },
+      {
+        "name": "Furniture Opposite Its Copy",
+        "body": "A station's subject sits on the side of the frame its panel does not occupy. The camera rule is counter-intuitive: a subject lands on the side of the frame its camera-relative offset shares with the camera's right axis, so to push a piece right you move the LOOK TARGET left of it, not the camera.",
+        "section": "layout"
+      },
+      {
+        "name": "One DOM Shadow",
+        "body": "Panels get panel-lift and nothing else does. Everything that looks three-dimensional either is three-dimensional or is drawn. There is no CSS bevel, emboss or imitation texture anywhere, and there must not be -- imitation material is the failure mode this world is most exposed to, because it already contains real material.",
+        "section": "elevation"
+      },
+      {
+        "name": "Vignette Is Not Contrast",
+        "body": "The stage vignette and grain layers are atmospheric only. Both were dialled back once because, stacked on the scene fog, they crushed the drawing they were meant to frame.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do let light carry the composition -- reach for a lamp, a pool, a rim before reaching for another colour.",
+      "Do give every text block that sits on the scene the panel ground, or the hero's radial scrim.",
+      "Do set every measurement in Martian Mono with tabular figures.",
+      "Do keep radius at zero and use corner ticks and circled markers for framing.",
+      "Do theme the browser's own surfaces -- selection, caret, scrollbar, focus ring, underline offset -- from the palette.",
+      "Do drive reveals from IntersectionObserver, applying the hidden state from script so a page whose JavaScript never arrives still reads in full.",
+      "Do honour prefers-reduced-motion by making the page still, not lesser: the camera snaps to each station, Lenis never loads, no scroll is hijacked."
+    ],
+    "donts": [
+      "Don't let a second element go tan. The furniture is the only lit thing.",
+      "Don't fake material: no CSS bevels, embossing or imitation texture. This world renders real material, so a fake one reads as a forgery.",
+      "Don't add a kicker or eyebrow above a heading. Station numbers belong in the margin as plan markers, in the rail, or on the sheet.",
+      "Don't introduce a middle radius, a pill, or a rounded card.",
+      "Don't use monospace for prose.",
+      "Don't make a copy panel translucent enough to read the scene through -- tried at 0.9, and the specification list became guesswork.",
+      "Don't pin a table header on this page -- tried, and over transparent body cells it rendered row two underneath itself.",
+      "Don't use ScrollTrigger to reveal a position: sticky element; its start measurement is unreliable there and left whole panels at opacity 0."
+    ]
+  }
+}

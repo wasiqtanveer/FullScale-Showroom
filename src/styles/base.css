@@ -1,0 +1,329 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   FULL SCALE — the sheet
+   A diazo sepia print: umber ground, bone linework, the furniture as the only
+   warm-lit thing in the room. Dark because the scene is an evening at home
+   with one lamp on, not because dark is a default.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Ground: the sheet, and the table it lies on */
+  --umber-900: #1e1510;
+  --umber-800: #2a1e16;
+  --umber-700: #372619;
+  --umber-600: #46311f;
+  --umber-550: #543b26;
+
+  /* ── Linework and type. bone-500 is for hairlines ONLY — it sits at 4.0:1
+       on the ground, which is under the floor for text. */
+  --bone-100: #f2e7d3;
+  --bone-300: #cbb79a;
+  --bone-500: #a08d72;
+  --hair: rgba(242, 231, 211, 0.16);
+  --hair-strong: rgba(242, 231, 211, 0.34);
+
+  /* ── The product, and the light on it */
+  --tan-500: #c98a52;
+  --tan-300: #e3b183;
+  --brass: #c08f4a;
+  --lamp: #f6c98a;
+
+  /* ── Revision green: the live state, and the one line describing a person */
+  --live: #8fb0a0;
+  --live-deep: #5f7d6e;
+  --alarm: #e0996a;
+
+  /* ── Space: one rhythm, 4px base */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4.5rem;
+  --s-9: 7rem;
+  --s-10: 10rem;
+
+  --gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --rail-w: 5.5rem;
+  --mast-h: 4.6rem;
+
+  --sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --mono: 'Martian Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Exponential ease-out: the one curve on the page */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+
+  color-scheme: dark;
+  accent-color: var(--live);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--umber-800);
+  color: var(--bone-100);
+  font-family: var(--sans);
+  font-variation-settings: 'wdth' 100;
+  font-size: clamp(1rem, 0.95rem + 0.22vw, 1.08rem);
+  line-height: 1.62;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Browser surfaces. The parts we did not draw still belong to the sheet.
+   ────────────────────────────────────────────────────────────────────────── */
+
+::selection {
+  background: var(--live-deep);
+  color: var(--bone-100);
+}
+
+::placeholder {
+  color: var(--bone-300);
+  opacity: 0.72;
+}
+
+:focus-visible {
+  outline: 2px solid var(--live);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--hair-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+a:hover {
+  text-decoration-color: var(--tan-300);
+}
+
+/* Every measurement on the page uses lining, tabular figures, so a column of
+   dimensions lines up the way it would on a drawing. */
+.index__dims,
+.specs dd,
+.anno__text b,
+.tb__strip,
+.revbox__v {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--umber-550) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--umber-900);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--umber-550);
+  border: 2px solid var(--umber-900);
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--bone-500);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Type. Archivo carries the voice at expanded width; Martian Mono carries
+   every number, because on a drawing the measurements are set apart.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.display {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-variation-settings: 'wdth' 116;
+  text-transform: uppercase;
+  letter-spacing: -0.022em;
+  line-height: 0.94;
+  margin: 0;
+  text-wrap: balance;
+  color: var(--bone-100);
+}
+
+.display em {
+  font-style: normal;
+  font-weight: 400;
+  font-variation-settings: 'wdth' 78;
+  letter-spacing: 0.01em;
+  color: var(--tan-300);
+}
+
+.display--xl {
+  font-size: clamp(2.75rem, 8.2vw, 6rem);
+}
+
+.display--l {
+  font-size: clamp(2.1rem, 5.6vw, 3.9rem);
+}
+
+.display--m {
+  font-size: clamp(1.75rem, 4vw, 2.7rem);
+  line-height: 0.98;
+}
+
+.hd-sm {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-300);
+  margin: 0 0 var(--s-4);
+}
+
+h2,
+h3 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.lede {
+  font-size: clamp(1.06rem, 1rem + 0.4vw, 1.3rem);
+  line-height: 1.55;
+  color: var(--bone-300);
+  max-width: 34ch;
+}
+
+.lede--center {
+  margin-inline: auto;
+  text-align: center;
+  max-width: 46ch;
+}
+
+.copy {
+  color: var(--bone-300);
+  max-width: 42ch;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Reveals. The hidden state is applied by script (the .rv class), never by
+   this stylesheet, so a page whose JavaScript never arrives still reads in
+   full. One curve, one duration, three delays — the motion grammar of the
+   whole page is the camera walking the plan, not per-section entrances.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Opacity and transform only, and that is a performance decision with a
+   number behind it. These entrances fire on the same frame the loader hands
+   over and the WebGL render loop starts, and an animated filter: blur(7px) on
+   a display--xl headline pushed the first animated frame of the whole hand-off
+   from 631ms to 1710ms after the class landed — every transition on screen,
+   including the loader's own exit, sat frozen while the blur allocated its
+   layers. The softness was not worth a second of stalled motion at the one
+   moment the page is being looked at hardest. */
+.rv {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.95s var(--ease) var(--rv-d, 0ms),
+    transform 0.95s var(--ease) var(--rv-d, 0ms);
+}
+
+.rv.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Screen-reader only, for table captions and duplicated labels. */
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: fixed;
+  top: var(--s-3);
+  left: var(--s-3);
+  z-index: 90;
+  transform: translateY(-200%);
+  padding: var(--s-2) var(--s-4);
+  background: var(--bone-100);
+  color: var(--umber-900);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.3s var(--ease);
+}
+
+.skip:focus {
+  transform: translateY(0);
+}
+
+.noscript {
+  position: relative;
+  z-index: 30;
+  margin: 0;
+  padding: var(--s-5) var(--gutter);
+  background: var(--umber-900);
+  border-top: 1px solid var(--hair);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--bone-300);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Reduced motion. Not a stripped page — a still one. The plan is drawn from
+   above and lit, nothing eases, and no scroll is hijacked.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
