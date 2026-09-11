@@ -804,9 +804,14 @@
   font-size: 0.9rem;
 }
 
+/* Not pinned, and it cannot be. The wrapper carries overflow-x: auto for the
+   46rem minimum width, which makes the wrapper itself the scrollport — so a
+   sticky head sticks to the wrapper, not the viewport, and `top: var(--mast-h)`
+   offsets it 4.6rem DOWN into the body and parks it across row two. Offsetting
+   by zero only moves the same bug to the top of the table. A header that must
+   clear a fixed masthead cannot be sticky inside a horizontal scroller; the
+   schedule is eleven rows, so it costs nothing to let it scroll away. */
 .index thead th {
-  position: sticky;
-  top: 0;
   text-align: left;
   font-family: var(--mono);
   font-size: 0.6rem;
@@ -817,11 +822,6 @@
   background: var(--umber-900);
   padding: 0.7rem var(--s-4);
   border-bottom: 1.5px solid var(--hair-strong);
-  /* Clear the fixed masthead, or the column heads sit under the navigation
-     for the whole length of an eleven-row schedule — and stack above the body
-     cells, or the sticky head parks itself on top of row two. */
-  top: var(--mast-h);
-  z-index: 2;
   white-space: nowrap;
 }
 

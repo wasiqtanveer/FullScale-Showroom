@@ -113,10 +113,18 @@ export function createPreloader() {
     // scene is assembled and the shaders compile, so only a handful of frames
     // run; a per-frame lerp leaves the figure stuck far behind the truth for
     // exactly as long as the work takes.
-    const dt = Math.min(0.25, (now - lastPaint) / 1000);
+    // Clamped at BOTH ends. The upper clamp stops a long stall from jumping
+    // the figure; the lower one is not theoretical — `now` arrives from the
+    // rAF timestamp on some calls and from performance.now() on others, and a
+    // single negative dt inverts the easing factor and drives the figure away
+    // from its target. It displayed "-36%" before this clamp existed.
+    const dt = Math.max(0, Math.min(0.25, (now - lastPaint) / 1000));
     lastPaint = now;
     shown += (target - shown) * (reduced ? 1 : 1 - Math.exp(-dt * 5.5));
     if (Math.abs(target - shown) < 0.002) shown = target;
+    // Belt and braces: whatever the arithmetic does, the figure on screen is
+    // a percentage and must stay inside one.
+    shown = Math.min(1, Math.max(0, shown));
     root.style.setProperty('--p', shown.toFixed(4));
     if (plan) plan.style.setProperty('--p', shown.toFixed(4));
     if (pctEl) pctEl.textContent = String(Math.round(shown * 100));

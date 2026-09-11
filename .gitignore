@@ -19,3 +19,8 @@ dist/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Raw capture PNGs. The committed README images are the re-encoded JPEGs
+# in docs/img; these originals are 4.5 MB and are reproducible from
+# .impeccable/docs-shots.mjs.
+docs/shots/

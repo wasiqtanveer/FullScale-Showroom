@@ -1,6 +1,13 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  /**
+   * Served from the domain root in development and from /<repo>/ on GitHub
+   * Pages, so the workflow passes the prefix in rather than hard-coding it —
+   * a literal base here would break `npm run dev` for everyone, and a renamed
+   * repository would silently ship a page with dead asset URLs.
+   */
+  base: process.env.BASE_PATH || '/',
   server: { port: 5180, host: '127.0.0.1' },
   build: {
     target: 'es2020',

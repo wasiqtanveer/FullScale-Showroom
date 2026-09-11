@@ -441,13 +441,25 @@ describe — every value they carry also appears in a spec list.
 - Don't use monospace for prose.
 - Don't make a copy panel translucent enough to read the scene through. It was
   tried at 0.9 and the specification list became guesswork.
-- Don't pin a table header on this page. It was tried; over transparent body
-  cells it rendered row two underneath itself, and eleven rows never needed it.
+- Don't pin a table header inside a horizontal scroller. `.index-scroll` needs
+  `overflow-x: auto` for the table's 46rem minimum width, and that makes the
+  wrapper the scrollport — so a sticky `thead` sticks to the wrapper, and the
+  `top: var(--mast-h)` meant to clear the fixed masthead instead offsets it
+  4.6rem DOWN into the body and parks it across row two. Offsetting by zero
+  only moves the same bug to the top of the table. This one regressed once
+  after being fixed, so it is worth stating as a rule: a header that must
+  clear a fixed masthead cannot be sticky inside a horizontal scroller. The
+  schedule is eleven rows; letting it scroll away costs nothing.
 - Don't use `ScrollTrigger` to reveal a `position: sticky` element. Its start
   measurement is unreliable there, which left whole panels at opacity 0.
 - Don't let a loading indicator claim a figure the work has not reached, and
   never let one become inescapable. Derive its label from what is on screen,
   ease it on real time, and give it a failsafe.
+- Don't clamp a progress figure at one end only. The preloader's easing takes
+  `dt` from a rAF timestamp on some calls and `performance.now()` on others; a
+  single negative `dt` inverts the easing factor, drives the figure away from
+  its target, and it rendered **"-36%"**. Clamp the delta at both ends and
+  bound the figure itself to 0–1.
 - Don't animate `filter: blur()` on entrance. It was in the reveals at 7px, and
   on a `display--xl` headline it pushed the first animated frame of the whole
   hand-off from 631 ms to 1710 ms after the class landed — every transition on
